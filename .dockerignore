@@ -1,0 +1,114 @@
+
+# Git
+# ----
+
+.git
+.gitignore
+
+
+# Editor files
+# ------------
+
+.vscode
+.idea
+
+
+# Python cache
+# ------------
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.pytest_cache/
+.mypy_cache/
+
+venv/
+.venv/
+
+
+# Logs
+# ----
+
+logs/
+*.log
+
+
+# Wine runtime state
+# ------------------
+
+.wine/
+wine-prefix/
+wineprefix/
+
+
+# X11/VNC artifacts
+# -----------------
+
+*.Xauthority
+.xauth/
+
+
+# Temp/debug
+# ----------
+
+tmp/
+temp/
+cache/
+
+*.core
+core.*
+
+
+# Build artifacts
+# ---------------
+
+dist/
+build/
+
+
+# Runtime state
+# -------------
+
+saves/
+runtime-data/
+server-cache/
+
+
+# Packet captures
+# ---------------
+
+pcaps/
+captures/
+
+*.pcap
+*.cap
+
+
+# Local compose overrides
+# -----------------------
+
+docker-compose.override.yml
+
+
+# Environment files
+# -----------------
+
+.env
+.env.local
+
+
+# Documentation scratch
+# ---------------------
+
+notes/
+scratch/
+
+
+# Optional large assets
+# ---------------------
+
+downloads/
+backups/
+.ignore/

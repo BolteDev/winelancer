@@ -1,0 +1,116 @@
+
+# Misc
+# --------
+
+.ignore/
+
+# Freelancer
+# ----------
+
+Freelancer/
+
+
+# OS / editor
+# ------------
+
+.DS_Store
+Thumbs.db
+
+.idea/
+.vscode/
+
+*.swp
+*.swo
+
+# Python
+# ------
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.pytest_cache/
+.mypy_cache/
+
+venv/
+.venv/
+
+
+# Runtime logs
+# ------------
+
+logs/
+*.log
+
+
+# Wine runtime state
+# ------------------
+
+.wine/
+wine-prefix/
+wineprefix/
+
+
+# X11 / VNC runtime artifacts
+# ---------------------------
+
+*.Xauthority
+.xauth/
+
+
+# Temporary/debug artifacts
+# -------------------------
+
+tmp/
+temp/
+cache/
+
+*.core
+core.*
+
+
+# Docker override/local files
+# ---------------------------
+
+docker-compose.override.yml
+
+
+# Environment files
+# -----------------
+
+.env
+.env.local
+
+
+# Build artifacts
+# ---------------
+
+dist/
+build/
+
+
+# Freelancer mutable state
+# ------------------------
+
+saves/
+runtime-data/
+server-cache/
+
+
+# Debug captures
+# --------------
+
+pcaps/
+captures/
+
+*.pcap
+*.cap
+
+
+# Misc
+# ----
+
+*.bak
+*.old
+*.tmp

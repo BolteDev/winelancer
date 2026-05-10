@@ -1,0 +1,30 @@
+FROM scottyhardy/docker-wine:latest
+USER root
+
+# install what upstream image lacks
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+    tini \
+    procps \
+    psmisc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Runtime directories
+RUN mkdir -p \
+    /opt/runtime \
+    /hooks/pre-start.d \
+    /hooks/post-stop.d
+
+# Runtime scripts
+COPY runtime/entrypoint.sh /opt/runtime/entrypoint.sh
+COPY runtime/init-wine.sh /opt/runtime/init-wine.sh
+
+RUN chmod +x \
+    /opt/runtime/entrypoint.sh \
+    /opt/runtime/init-wine.sh
+
+# Shared runtime environment
+ENV DISPLAY=:99
+ENV WINEDEBUG=-all
+
+# Use tini as PID 1
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/runtime/entrypoint.sh"]
