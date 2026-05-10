@@ -49,10 +49,25 @@ cleanup() {
 
 trap cleanup SIGTERM SIGINT
 
+# Run Xvfb
 echo "[runtime] Starting Xvfb..."
 
 Xvfb "$DISPLAY" -screen 0 1024x768x16 &
 XVFB_PID=$!
+
+_waited=0
+until xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; do
+    if ! kill -0 "$XVFB_PID" 2>/dev/null; then
+        echo "[runtime] Xvfb process died"
+        exit 1
+    fi
+    _waited=$((_waited + 1))
+    if [[ "$_waited" -ge 10 ]]; then
+        echo "[runtime] Xvfb failed to start within timeout"
+        exit 1
+    fi
+    sleep 1
+done
 
 /opt/runtime/init-wine.sh
 
