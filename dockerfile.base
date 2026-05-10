@@ -1,11 +1,17 @@
 FROM scottyhardy/docker-wine:latest
 USER root
 
+# Ensure wine runtime user exists
+RUN groupadd -g 1000 wineuser && \
+    useradd -u 1000 -g wineuser -m -s /bin/bash wineuser && \
+    usermod -aG sudo wineuser
+
 # install what upstream image lacks
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     tini \
     procps \
     psmisc \
+    x11-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Runtime directories
@@ -24,7 +30,9 @@ RUN chmod +x \
 
 # Shared runtime environment
 ENV DISPLAY=:99
+ENV WINEPREFIX=/home/wineuser/.wine
 ENV WINEDEBUG=-all
+ENV HOME=/home/wineuser
 
 # Use tini as PID 1
 ENTRYPOINT ["/usr/bin/tini", "--", "/opt/runtime/entrypoint.sh"]

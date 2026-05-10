@@ -6,9 +6,15 @@ shopt -s nullglob
 DISPLAY="${DISPLAY:-:99}"
 export DISPLAY
 
+export HOME=/home/wineuser
+export WINEPREFIX="${WINEPREFIX:-/home/wineuser/.wine}"
+
 XVFB_PID=""
 APP_PID=""
 CLEANED_UP=0
+run_as_wineuser() {
+    gosu wineuser "$@"
+}
 
 cleanup() {
     if [[ "$CLEANED_UP" -eq 1 ]]; then
@@ -37,7 +43,7 @@ cleanup() {
     fi
 
     echo "[runtime] Stopping wineserver..."
-    wineserver -k || true
+    run_as_wineuser wineserver -k || true
 
     if [[ -n "${XVFB_PID:-}" ]]; then
         echo "[runtime] Stopping Xvfb..."
@@ -48,11 +54,16 @@ cleanup() {
 }
 
 trap cleanup SIGTERM SIGINT
+echo "[runtime] Normalizing Wine ownership..."
+mkdir -p "$WINEPREFIX"
+chown -R wineuser:wineuser "$WINEPREFIX"
+
 
 # Run Xvfb
 echo "[runtime] Starting Xvfb..."
 
-Xvfb "$DISPLAY" -screen 0 1024x768x16 &
+Xvfb "$DISPLAY" -screen 0 1024x768x16 \
+    > /tmp/xvfb.log 2>&1 &
 XVFB_PID=$!
 
 _waited=0
@@ -69,12 +80,12 @@ until xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; do
     sleep 1
 done
 
-/opt/runtime/init-wine.sh
+run_as_wineuser /opt/runtime/init-wine.sh
 
 for hook in /hooks/pre-start.d/*; do
     if [[ -x "$hook" ]]; then
         echo "[runtime] Running pre-start hook: $hook"
-        "$hook"
+        run_as_wineuser "$hook"
     fi
 done
 
@@ -85,7 +96,7 @@ fi
 
 echo "[runtime] Launching application..."
 
-"$@" &
+run_as_wineuser "$@" &
 APP_PID=$!
 
 wait "$APP_PID"
@@ -94,7 +105,7 @@ EXIT_CODE=$?
 for hook in /hooks/post-stop.d/*; do
     if [[ -x "$hook" ]]; then
         echo "[runtime] Running post-stop hook: $hook"
-        "$hook"
+        run_as_wineuser "$hook"
     fi
 done
 
