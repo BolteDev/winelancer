@@ -1,18 +1,13 @@
-# Freelancer Wine Runtime Platform
+# Freelancer Wine Runtime
 
-Reusable Docker-based Wine runtime platform for running Windows server applications under Linux containers.
+Reusable Docker-based Wine runtime platform for running Windows server applications under Linux containers, in this case Microsoft Freelancer (2003) FLServer.
 
-Initial target application:
+Includes:
+* Generic Wine/container runtime behavior
+* Application-specific implementation
+* Debugging/tooling concerns
 
-* Freelancer FLServer
-
-The architecture is designed to separate:
-
-* generic Wine/container runtime behavior
-* application-specific implementation
-* debugging/tooling concerns
-
-This allows the runtime layer to eventually support other Windows-based server applications without major architectural changes.
+Can be re-used for other Windows applications with minimal changes (by using hooks or basing your runtime layer as a seperate dockerfile etc)
 
 ---
 
@@ -30,15 +25,7 @@ dockerfile.flserver-debug
 
 ---
 
-# Images
-
----
-
 ## dockerfile.base
-
-Reusable Wine runtime platform.
-
-Responsibilities:
 
 * Wine lifecycle management
 * Xvfb management
@@ -47,7 +34,7 @@ Responsibilities:
 * runtime hooks
 * process supervision
 
-This layer intentionally avoids application-specific behavior.
+This layer avoids app-specific behavior.
 
 ---
 
@@ -55,30 +42,24 @@ This layer intentionally avoids application-specific behavior.
 
 Freelancer-specific application layer.
 
-Responsibilities:
-
 * Python runtime
 * FLServer assets/configuration
 * `fl.py`
-* application launch logic
+* Application launch logic
 
 ---
 
 ## dockerfile.flserver-debug
 
-Optional diagnostics/debugging layer.
-
-Potential tooling includes:
+Optional diagnostics/debugging.
 
 * VNC/X11 tooling
-* network diagnostics
-* tracing/debugging utilities
+* Network diagnostics
+* Tracing/debugging utilities
 
 ---
 
 # Runtime Design
-
-The runtime layer owns:
 
 * Xvfb startup/shutdown
 * Wine initialization
@@ -93,13 +74,10 @@ Applications are launched through the runtime using:
 CMD [...]
 ```
 
-This keeps application logic separate from infrastructure/runtime orchestration.
-
----
 
 # Hooks
 
-Hooks allow application-specific runtime customization without modifying the shared runtime implementation.
+Hooks allow application-specific runtime customization without modifying the shared runtime.
 
 Directory structure:
 
@@ -111,59 +89,39 @@ hooks/
 
 Examples:
 
-* winetricks installs
-* registry modifications
-* runtime setup
-* diagnostics collection
+* Winetricks installs
+* Registry modifications
+* Runtime setup
+* Diagnostics collection
 
 See:
 
 ```text id="jlwms3"
 hooks/README.md
-```
-
-for details.
-
----
-
-# Development Philosophy
-
-This project intentionally favors:
-
-* minimal upstream divergence
-* reusable runtime behavior
-* explicit lifecycle management
-* production-oriented container behavior
-* separation of concerns
-
-The runtime layer should remain generic enough to support additional Wine-based applications in the future.
+``` for details.
 
 ---
 
 # Current Status
 
-Current progress includes:
-
-* reusable runtime platform
-* graceful shutdown handling
+* Reusable runtime platform
+* Graceful shutdown handling
 * Wine lifecycle management
-* hooks system
+* Hooks
 * Xvfb orchestration
-* container supervision via `tini`
-
-The FLServer application layer is currently under active development.
+* Container supervision via `tini`
 
 ---
 
 # Planned Features
 
 * FLServer integration
-* debug tooling image
-* healthchecks
-* persistent Wine prefixes
-* structured logging
-* operational hardening
-* orchestration improvements
+* Debug tooling image
+* Healthchecks
+* Persistent Wine prefixes
+* Structured logging
+* Operational hardening
+* Orchestration improvements
 
 ---
 
@@ -176,34 +134,3 @@ Recommended tooling:
 * [Hadolint](https://github.com/hadolint/hadolint?utm_source=chatgpt.com)
 
 ---
-
-# Repository Structure
-
-```text id="jlwms4"
-.
-├── dockerfile.base
-├── dockerfile.flserver
-├── dockerfile.flserver-debug
-│
-├── runtime/
-├── hooks/
-├── flserver/
-├── docs/
-│
-├── justfile
-├── compose.yaml
-│
-├── .editorconfig
-├── .gitattributes
-├── .gitignore
-└── .dockerignore
-```
-
----
-
-# Goals
-
-* reusable Wine runtime platform
-* clean separation of runtime vs application
-* production-oriented lifecycle handling
-* reusable architecture for future Windows services/apps under Wine
