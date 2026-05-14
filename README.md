@@ -98,7 +98,8 @@ See:
 
 ```text id="jlwms3"
 hooks/README.md
-``` for details.
+```
+for details.
 
 ---
 
